@@ -594,14 +594,15 @@ class GUIApp:
                     ticker = self.bot.client.get_symbol_ticker(symbol=symbol)
                     current_price = float(ticker['price'])
                     change_pct = ((current_price - data['buy_price']) / data['buy_price']) * 100.0
-                    self.tree.insert("", tk.END, values=(
+                    row_values = {
                         COLUMN_SYMBOL: symbol,
                         COLUMN_BUY_PRICE: f"{data['buy_price']:.4f}",
                         COLUMN_QUANTITY: f"{data['quantity']:.6f}",
                         COLUMN_CURRENT_PRICE: f"{current_price:.4f}",
                         COLUMN_CHANGE_PERCENT: f"{change_pct:.2f}%"
                     }
-                    self.tree.insert("", tk.END, values=tuple(row_values[col] for col in self.tree_columns))
+                    # Ensure the values are inserted in the order defined by self.tree_columns
+                    self.tree.insert("", tk.END, values=tuple(row_values[col_name] for col_name in self.tree_columns))
                 except Exception as e:
                     # self.write_log(f"Error updating table for {symbol}: {e}") 
                     row_values = {
@@ -611,7 +612,7 @@ class GUIApp:
                         COLUMN_CURRENT_PRICE: PLACEHOLDER_ERROR,
                         COLUMN_CHANGE_PERCENT: PLACEHOLDER_NA
                     }
-                    self.tree.insert("", tk.END, values=tuple(row_values[col] for col in self.tree_columns))
+                    self.tree.insert("", tk.END, values=tuple(row_values[col_name] for col_name in self.tree_columns)) # Corrected: col_name instead of col
         
         self.root.after(10000, self.update_positions_table) # Reschedule
 
